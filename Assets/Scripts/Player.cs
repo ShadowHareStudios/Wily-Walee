@@ -11,8 +11,14 @@ public class Player : MonoBehaviour
     float angle;
     float smoothInputMagnitude;
     float smoothMoveVelocity;
+    Vector3 velocity;
 
-    // Update is called once per frame
+    Rigidbody rigidbody;
+
+    private void Start()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+    }
     void Update()
     {
         Vector3 inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized; 
@@ -21,8 +27,15 @@ public class Player : MonoBehaviour
 
         float targetAngle = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg;
         angle = Mathf.LerpAngle(angle, targetAngle, Time.deltaTime * turnSpeed * inputMagnitude);
-        transform.eulerAngles = Vector3.up * angle;
+        /*transform.eulerAngles = Vector3.up * angle;
 
-        transform.Translate (transform.forward * moveSpeed * Time.deltaTime * smoothInputMagnitude, Space.World);
+        transform.Translate (transform.forward * moveSpeed * Time.deltaTime * smoothInputMagnitude, Space.World);*/
+
+        velocity = transform.forward * moveSpeed * smoothInputMagnitude;
+    }
+    private void FixedUpdate()
+    {
+        rigidbody.MoveRotation(Quaternion.Euler(Vector3.up * angle));
+        rigidbody.MovePosition (rigidbody.position + velocity * Time.deltaTime);
     }
 }
