@@ -4,15 +4,20 @@ using UnityEngine;
 
 public class Guard : MonoBehaviour
 {
+    public static event System.Action OnGuardHasSpottedPlayer;
+
     public float speed = 4;
     public float waitTime = 0.3f;
     public float turnSpeed = 90;
+    public float timeToSpotPlayer = 1.5f;
 
     public Light spotlight;
     public float viewDistance;
     public LayerMask viewMask;
+
     float viewAngle;
-    
+    float playerVisibleTimer;
+
     public Transform pathHolder;
     Transform player;
     Color originalSpotlightColour;
@@ -37,11 +42,23 @@ public class Guard : MonoBehaviour
     {
         if (CanSeePlayer())
         {
-            spotlight.color = Color.red;
+            playerVisibleTimer += Time.deltaTime;
+            
         }
         else
         {
-            spotlight.color = originalSpotlightColour;
+            playerVisibleTimer -= Time.deltaTime;   
+            
+        }
+        playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
+        spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
+
+        if (playerVisibleTimer >= timeToSpotPlayer)
+        {
+            if(OnGuardHasSpottedPlayer != null)
+            {
+                OnGuardHasSpottedPlayer();
+            }
         }
     }
 
