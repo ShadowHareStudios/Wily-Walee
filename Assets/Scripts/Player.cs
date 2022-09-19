@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
         {
             inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         }
-         
+
         float inputMagnitude = inputDirection.magnitude;
         smoothInputMagnitude = Mathf.SmoothDamp(smoothInputMagnitude, inputMagnitude, ref smoothMoveVelocity, smoothMoveTime);
 
