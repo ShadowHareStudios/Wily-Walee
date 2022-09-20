@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class Guard : MonoBehaviour
 {
-    public static event System.Action OnGuardHasSpottedPlayer;
+    public static event System.Action OnGuardHasCaughtPlayer;
+    
+    public enum GuardStates
+    {
+        none,patrol,chase, search
+    }
 
-    public float speed = 4;
+    GuardStates currentState;
+
+    public float patrolSpeed = 4;
+    public float chaseSpeed = 6;
     public float waitTime = 0.3f;
     public float turnSpeed = 90;
     public float timeToSpotPlayer = 1.5f;
+    public float grabDistance = 0.5f;
 
     public Light spotlight;
     public float viewDistance;
@@ -28,38 +37,82 @@ public class Guard : MonoBehaviour
         viewAngle = spotlight.spotAngle;
         originalSpotlightColour = spotlight.color;
 
-        Vector3[] waypoints = new Vector3[pathHolder.childCount];
-        for (int i = 0; i < waypoints.Length; i++)
+        if(currentState == GuardStates.none)
         {
-            waypoints[i] = pathHolder.GetChild(i).position;
-            waypoints[i] = new Vector3 (waypoints[i].x, transform.position.y, waypoints[i].z);
-        }
+            currentState = GuardStates.patrol;
+        }    
 
-        StartCoroutine (FollowPath(waypoints));
+        StartCoroutine (FollowPath(CreatePath()));
     }
 
     private void Update()
     {
-        if (CanSeePlayer())
+        switch (currentState)
         {
-            playerVisibleTimer += Time.deltaTime;
-            
-        }
-        else
-        {
-            playerVisibleTimer -= Time.deltaTime;   
-            
-        }
-        playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
-        spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
+            case GuardStates.patrol:
+                if (CanSeePlayer())
+                {
+                    playerVisibleTimer += Time.deltaTime;
 
-        if (playerVisibleTimer >= timeToSpotPlayer)
-        {
-            if(OnGuardHasSpottedPlayer != null)
-            {
-                OnGuardHasSpottedPlayer();
-            }
+                }
+                else
+                {
+                    playerVisibleTimer -= Time.deltaTime;
+
+                }
+                playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
+                spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
+
+                if (playerVisibleTimer >= timeToSpotPlayer)
+                {
+                    currentState = GuardStates.chase;
+                    StopAllCoroutines();
+                //swap to Nav Mesh
+                
+                }
+
+                break;
+
+            case GuardStates.chase:
+                
+                ChasePlayer();
+                StartCoroutine(TurnToFace(player.position));
+
+                if (Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(player.position), player.position) < grabDistance)
+                {
+                    if(OnGuardHasCaughtPlayer != null)
+                    {
+                        OnGuardHasCaughtPlayer();
+                        currentState = GuardStates.none;
+                    }
+                }
+           
+
+                    if (!CanSeePlayer())
+                {
+                    currentState= GuardStates.search;
+                    StopAllCoroutines();
+                    
+                }
+
+                break;
+                default:break;
         }
+   
+        
+    }
+
+   Vector3[] CreatePath()
+    {
+
+        Vector3[] waypoints = new Vector3[pathHolder.childCount];
+        for (int i = 0; i < waypoints.Length; i++)
+        {
+            waypoints[i] = pathHolder.GetChild(i).position;
+            waypoints[i] = new Vector3(waypoints[i].x, transform.position.y, waypoints[i].z);
+        }
+        return waypoints;
+
     }
 
 
@@ -80,9 +133,14 @@ public class Guard : MonoBehaviour
         return false;
     }
 
+    void ChasePlayer()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+    }
+
     IEnumerator FollowPath(Vector3[] waypoints)
     {
-        transform.position = waypoints[0];
+        
 
         int targetWaypointIndex = 1;
         Vector3 targetWaypoint = waypoints[targetWaypointIndex];
@@ -90,7 +148,7 @@ public class Guard : MonoBehaviour
 
         while(true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, patrolSpeed * Time.deltaTime);
             if (transform.position == targetWaypoint)
             {
                 targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;

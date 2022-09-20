@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     public float smoothMoveTime = 0.01f;
     public float turnSpeed = 8;
 
+    public bool isHiding = false;
+
     float angle;
     float smoothInputMagnitude;
     float smoothMoveVelocity;
@@ -19,7 +21,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
-        Guard.OnGuardHasSpottedPlayer += Disable;
+        Guard.OnGuardHasCaughtPlayer += Disable;
     }
     void Update()
     {
@@ -41,9 +43,29 @@ public class Player : MonoBehaviour
         velocity = transform.forward * moveSpeed * smoothInputMagnitude;
     }
 
+  public void Hide(bool hidden)
+    {
+        if (hidden)
+        {
+            gameObject.layer = LayerMask.NameToLayer("Obstacle");
+            isHiding = true;
+            Disable(true);
+        }
+        else
+        {
+            gameObject.layer = LayerMask.NameToLayer("Player");
+            isHiding = false;   
+            Disable(false);
+        }
+    }
+
     private void Disable()
     {
         disabled = true;
+    }
+    private void Disable(bool disabled)
+    {
+        this.disabled = disabled; 
     }
     private void FixedUpdate()
     {
@@ -53,6 +75,6 @@ public class Player : MonoBehaviour
 
     private void OnDestroy()
     {
-        Guard.OnGuardHasSpottedPlayer -= Disable;
+        Guard.OnGuardHasCaughtPlayer -= Disable;
     }
 }
