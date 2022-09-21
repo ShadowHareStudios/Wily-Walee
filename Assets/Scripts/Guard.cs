@@ -31,7 +31,7 @@ public class Guard : MonoBehaviour
     public float turnSpeed = 90;
 
     //Chase Variables
-    public float timeToSpotPlayer = 1.5f;
+    public float timeToSpotPlayer = 0.5f;
     public float grabDistance = 0.5f;
     public float chaseSpeed = 6;
 

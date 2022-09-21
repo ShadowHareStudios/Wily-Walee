@@ -13,6 +13,7 @@ public class Lootables : MonoBehaviour
     float playerVisibleTimer;
     float timeToSteal = 4f;
     float isStealing;
+    bool stolen;
     
 
     Vector3 originalItemLocation;
@@ -21,7 +22,10 @@ public class Lootables : MonoBehaviour
 
 
     Transform player;
-    
+
+    public static event System.Action PlayerHasStolen;
+
+
 
     private void Start()
     {
@@ -29,6 +33,7 @@ public class Lootables : MonoBehaviour
         viewAngle = spotlight.spotAngle;
         originalItemLocation = transform.position;
         originalSpotlightColour = spotlight.color;
+        stolen = false;
 
        
     }
@@ -57,7 +62,9 @@ public class Lootables : MonoBehaviour
         if ( isStealing >= timeToSteal)
         {
             GameObject.Destroy(gameObject);
+            stolen = true;
             //add to player heist value total or howver else we are tracking player score
+            PlayerHasStolen();
         }
     }
 
