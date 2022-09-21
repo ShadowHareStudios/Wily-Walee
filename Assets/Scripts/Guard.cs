@@ -1,24 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Guard : MonoBehaviour
 {
+    private NavMeshAgent guardNavAgent;
     public static event System.Action OnGuardHasCaughtPlayer;
     
     public enum GuardStates
     {
-        none,patrol,chase, search
+        none,patrol,chase,search
     }
 
     GuardStates currentState;
 
+    //Search Variables
+    public Vector3 walkPoint;
+    bool walkPointSet;
+    public float walkPointRange;
+    public float walkDistance;
+    public LayerMask whatIsGround;
+    public float alertedTimer = 10f;
+    public float startAlertedTimer;
+   public Vector3 playerLastSeenPosition;
+
+    //Patrol Variables
     public float patrolSpeed = 4;
-    public float chaseSpeed = 6;
     public float waitTime = 0.3f;
     public float turnSpeed = 90;
+
+    //Chase Variables
     public float timeToSpotPlayer = 1.5f;
     public float grabDistance = 0.5f;
+    public float chaseSpeed = 6;
 
     public Light spotlight;
     public float viewDistance;
@@ -31,8 +46,16 @@ public class Guard : MonoBehaviour
     Transform player;
     Color originalSpotlightColour;
 
+    private NavMeshPath path;
+
+    private void Awake()
+    {
+       
+    }
+
     private void Start()
     {
+        guardNavAgent = GetComponent<NavMeshAgent>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         viewAngle = spotlight.spotAngle;
         originalSpotlightColour = spotlight.color;
@@ -40,66 +63,177 @@ public class Guard : MonoBehaviour
         if(currentState == GuardStates.none)
         {
             currentState = GuardStates.patrol;
-        }    
+        }
 
-        StartCoroutine (FollowPath(CreatePath()));
+        StartCoroutine(FollowPath(CreatePath()));
     }
 
     private void Update()
     {
+        Debug.Log(currentState);
         switch (currentState)
         {
             case GuardStates.patrol:
+
+                
+
                 if (CanSeePlayer())
                 {
                     playerVisibleTimer += Time.deltaTime;
-
                 }
                 else
                 {
                     playerVisibleTimer -= Time.deltaTime;
-
+                    
                 }
                 playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
                 spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
 
                 if (playerVisibleTimer >= timeToSpotPlayer)
                 {
+                    guardNavAgent.speed = 6f;
                     currentState = GuardStates.chase;
-                    StopAllCoroutines();
-                //swap to Nav Mesh
-                
+
+                   StopAllCoroutines();
+                    //swap to Nav Mesh
+
                 }
+               
 
                 break;
 
             case GuardStates.chase:
-                
-                ChasePlayer();
-                StartCoroutine(TurnToFace(player.position));
-
-                if (Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(player.position), player.position) < grabDistance)
+                if (CanSeePlayer())
                 {
-                    if(OnGuardHasCaughtPlayer != null)
+                    ChasePlayer();
+                    StartCoroutine(TurnToFace(player.position));
+                    playerLastSeenPosition = player.position;
+                    startAlertedTimer = 0;
+
+                    if (Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(player.position), player.position) < grabDistance)
                     {
-                        OnGuardHasCaughtPlayer();
-                        currentState = GuardStates.none;
+                        if (OnGuardHasCaughtPlayer != null)
+                        {
+                            OnGuardHasCaughtPlayer();
+                            currentState = GuardStates.none;
+                        }
                     }
                 }
-           
 
-                    if (!CanSeePlayer())
+                if (!CanSeePlayer())
                 {
-                    currentState= GuardStates.search;
-                    StopAllCoroutines();
-                    
-                }
 
+
+                    
+                    StopAllCoroutines();
+
+
+                    Debug.DrawLine(transform.position, playerLastSeenPosition, Color.red, 5f); 
+                    
+                    if (!guardNavAgent.hasPath)
+                    {
+
+                        currentState = GuardStates.search;
+                        guardNavAgent.ResetPath();
+
+                        Debug.Log("time to search");
+                    }
+                    else
+                    {
+                        guardNavAgent.destination = playerLastSeenPosition;
+                    }
+
+                }
+                
                 break;
-                default:break;
+
+            case GuardStates.search:
+
+                
+
+                if (guardNavAgent.destination != playerLastSeenPosition)
+                {
+                    if (startAlertedTimer < alertedTimer)
+                    {
+                        startAlertedTimer += Time.deltaTime;
+
+                    }
+                }
+                
+                    if (!guardNavAgent.hasPath)
+                    {
+
+                        if (!walkPointSet)
+                        {
+                            SearchWalkPoint();
+                        
+                        }
+
+                    }
+                if (walkPointSet)
+                {
+                    if (startAlertedTimer < alertedTimer)
+                    {
+                        Debug.Log("still searching");
+
+                    }
+
+                    else
+                    {
+                        guardNavAgent.ResetPath();
+                        /*alertedTimer = 10f;*/
+                        guardNavAgent.speed = 4f;
+                        currentState = GuardStates.patrol;
+                        walkPointSet = false;
+                        StopAllCoroutines();
+                        StartCoroutine(FollowPath(CreatePath()));
+
+                    }
+
+                    guardNavAgent.SetDestination(walkPoint);
+                   
+
+                    Vector3 distanceToWalkPoint = transform.position - walkPoint;
+
+                    if (distanceToWalkPoint.magnitude < 1f)
+                    {
+                        walkPointSet = false;
+                    }
+                }
+                alertedTimer = Mathf.Clamp(alertedTimer, 0, 10);
+                break;
+
+            default: break;
+                
         }
+    }
    
         
+    
+
+    private void SearchWalkPoint()
+    {
+
+        float randomZ = Random.Range(-walkPointRange, walkPointRange);
+        float randomX = Random.Range(-walkPointRange, walkPointRange);
+
+       /* Debug.Log("This is randomZ: " + randomZ + " This is randomX: " + randomX);*/
+
+        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+
+        if(Physics.Raycast(walkPoint,-transform.up, 2f, whatIsGround))
+        {
+            walkPointSet = true;
+        }
+
+        Vector3 dirToWalkPoint = ((transform.position + Vector3.down * 0.5f) - walkPoint).normalized;
+
+        RaycastHit hit;
+        if (Physics.Raycast((transform.position + Vector3.down * 0.5f), dirToWalkPoint, out hit))
+        {
+         walkPoint = hit.point;
+        }
+        Debug.DrawLine((transform.position + Vector3.down * 0.5f), walkPoint, Color.red, 5f);
     }
 
    Vector3[] CreatePath()
@@ -118,6 +252,7 @@ public class Guard : MonoBehaviour
 
     bool CanSeePlayer()
     {
+       
         if(Vector3.Distance(transform.position, player.position) < viewDistance)
         {
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
@@ -126,6 +261,7 @@ public class Guard : MonoBehaviour
             {
                 if(!Physics.Linecast (transform.position, player.position, viewMask))
                 {
+                    
                     return true;
                 }
             }
@@ -135,22 +271,27 @@ public class Guard : MonoBehaviour
 
     void ChasePlayer()
     {
-        transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+        /*transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);*/
+        guardNavAgent.destination = player.position;
     }
 
     IEnumerator FollowPath(Vector3[] waypoints)
     {
-        
-
+        foreach (Vector3 waypoint in waypoints)
+        {
+           /* Debug.Log("waypoint list: " + waypoint);*/
+        }
         int targetWaypointIndex = 1;
         Vector3 targetWaypoint = waypoints[targetWaypointIndex];
         transform.LookAt(targetWaypoint);
 
         while(true)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, patrolSpeed * Time.deltaTime);
-            if (transform.position == targetWaypoint)
+            guardNavAgent.SetDestination(targetWaypoint);
+            if (guardNavAgent.pathStatus == NavMeshPathStatus.PathComplete)
             {
+               /* Debug.Log("Switching to end node: " + guardNavAgent.pathEndPosition);
+                Debug.Log("Switching to next position: " + guardNavAgent.nextPosition);*/
                 targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
                 targetWaypoint = waypoints[targetWaypointIndex];
                 yield return new WaitForSeconds(waitTime);

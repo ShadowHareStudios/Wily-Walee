@@ -48,6 +48,7 @@ public class Lootables : MonoBehaviour
         else
         {
             isStealing -= Time.deltaTime;
+            spotlight.color = Color.Lerp(spotlight.color, originalSpotlightColour, timeToSteal);
 
         }
         isStealing = Mathf.Clamp(isStealing, 0, timeToSteal);

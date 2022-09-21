@@ -14,7 +14,7 @@ public class HidingSpots : MonoBehaviour
         if (playerIsColliding)
         {
 
-            Debug.Log("Player is Colliding");
+           /* Debug.Log("Player is Colliding");*/
             if (player.GetComponent<Player>().isHiding)
             {
                 hideTime += Time.deltaTime;
@@ -26,7 +26,7 @@ public class HidingSpots : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Debug.Log("Space is Down Stay");
+                /*Debug.Log("Space is Down Stay");*/
                 if (player.GetComponent<Player>().isHiding == false)
                 {
                     player.GetComponent<Player>().Hide(true);
@@ -36,7 +36,7 @@ public class HidingSpots : MonoBehaviour
             }
             if (Input.GetKeyUp(KeyCode.Space))
             {
-                Debug.Log("Space is Up Stay");
+                /*Debug.Log("Space is Up Stay");*/
                 player.GetComponent<Player>().Hide(false);
             }
         }
