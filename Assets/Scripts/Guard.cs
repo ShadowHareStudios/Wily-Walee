@@ -22,7 +22,8 @@ public class Guard : MonoBehaviour
     public float walkDistance;
     public LayerMask whatIsGround;
     public float alertedTimer = 10f;
-    Vector3 playerLastSeenPosition;
+    public float startAlertedTimer;
+   public Vector3 playerLastSeenPosition;
 
     //Patrol Variables
     public float patrolSpeed = 4;
@@ -44,6 +45,8 @@ public class Guard : MonoBehaviour
     public Transform pathHolder;
     Transform player;
     Color originalSpotlightColour;
+
+    private NavMeshPath path;
 
     private void Awake()
     {
@@ -67,7 +70,7 @@ public class Guard : MonoBehaviour
 
     private void Update()
     {
-       
+        Debug.Log(currentState);
         switch (currentState)
         {
             case GuardStates.patrol:
@@ -100,50 +103,79 @@ public class Guard : MonoBehaviour
                 break;
 
             case GuardStates.chase:
-
-                ChasePlayer();
-                StartCoroutine(TurnToFace(player.position));
-                
-
-                if (Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(player.position), player.position) < grabDistance)
+                if (CanSeePlayer())
                 {
-                    if (OnGuardHasCaughtPlayer != null)
+                    ChasePlayer();
+                    StartCoroutine(TurnToFace(player.position));
+                    playerLastSeenPosition = player.position;
+                    startAlertedTimer = 0;
+
+                    if (Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(player.position), player.position) < grabDistance)
                     {
-                        OnGuardHasCaughtPlayer();
-                        currentState = GuardStates.none;
+                        if (OnGuardHasCaughtPlayer != null)
+                        {
+                            OnGuardHasCaughtPlayer();
+                            currentState = GuardStates.none;
+                        }
                     }
                 }
 
-
                 if (!CanSeePlayer())
                 {
-                    guardNavAgent.ResetPath();
-                    playerLastSeenPosition = player.position;
-                    Debug.DrawLine(transform.position, playerLastSeenPosition, Color.red, 5f); 
-                    guardNavAgent.destination = player.position;
-                    currentState = GuardStates.search;
+
+
+                    
                     StopAllCoroutines();
+
+
+                    Debug.DrawLine(transform.position, playerLastSeenPosition, Color.red, 5f); 
+                    
+                    if (!guardNavAgent.hasPath)
+                    {
+
+                        currentState = GuardStates.search;
+                        guardNavAgent.ResetPath();
+
+                        Debug.Log("time to search");
+                    }
+                    else
+                    {
+                        guardNavAgent.destination = playerLastSeenPosition;
+                    }
+
                 }
+                
                 break;
 
             case GuardStates.search:
 
-                if (!walkPointSet)
-                {
-                    if (guardNavAgent.remainingDistance < 0.1f)
-                    {
-                         SearchWalkPoint();
-                        Debug.Log("time to search");
-                        alertedTimer -= Time.deltaTime;
-                    }
+                
 
+                if (guardNavAgent.destination != playerLastSeenPosition)
+                {
+                    if (startAlertedTimer < alertedTimer)
+                    {
+                        startAlertedTimer += Time.deltaTime;
+
+                    }
                 }
+                
+                    if (!guardNavAgent.hasPath)
+                    {
+
+                        if (!walkPointSet)
+                        {
+                            SearchWalkPoint();
+                        
+                        }
+
+                    }
                 if (walkPointSet)
                 {
-                    if (alertedTimer > 0)
+                    if (startAlertedTimer < alertedTimer)
                     {
-                        alertedTimer -= Time.deltaTime;
-                        /*alertedTimer = Mathf.Clamp(alertedTimer, 0, 10);*/
+                        Debug.Log("still searching");
+
                     }
 
                     else
@@ -168,9 +200,11 @@ public class Guard : MonoBehaviour
                         walkPointSet = false;
                     }
                 }
+                alertedTimer = Mathf.Clamp(alertedTimer, 0, 10);
                 break;
 
             default: break;
+                
         }
     }
    
@@ -183,7 +217,7 @@ public class Guard : MonoBehaviour
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
         float randomX = Random.Range(-walkPointRange, walkPointRange);
 
-        Debug.Log("This is randomZ: " + randomZ + " This is randomX: " + randomX);
+       /* Debug.Log("This is randomZ: " + randomZ + " This is randomX: " + randomX);*/
 
         walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
 
@@ -218,6 +252,7 @@ public class Guard : MonoBehaviour
 
     bool CanSeePlayer()
     {
+       
         if(Vector3.Distance(transform.position, player.position) < viewDistance)
         {
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
@@ -226,6 +261,7 @@ public class Guard : MonoBehaviour
             {
                 if(!Physics.Linecast (transform.position, player.position, viewMask))
                 {
+                    
                     return true;
                 }
             }
@@ -243,7 +279,7 @@ public class Guard : MonoBehaviour
     {
         foreach (Vector3 waypoint in waypoints)
         {
-            Debug.Log("waypoint list: " + waypoint);
+           /* Debug.Log("waypoint list: " + waypoint);*/
         }
         int targetWaypointIndex = 1;
         Vector3 targetWaypoint = waypoints[targetWaypointIndex];
@@ -254,8 +290,8 @@ public class Guard : MonoBehaviour
             guardNavAgent.SetDestination(targetWaypoint);
             if (guardNavAgent.pathStatus == NavMeshPathStatus.PathComplete)
             {
-                Debug.Log("Switching to end node: " + guardNavAgent.pathEndPosition);
-                Debug.Log("Switching to next position: " + guardNavAgent.nextPosition);
+               /* Debug.Log("Switching to end node: " + guardNavAgent.pathEndPosition);
+                Debug.Log("Switching to next position: " + guardNavAgent.nextPosition);*/
                 targetWaypointIndex = (targetWaypointIndex + 1) % waypoints.Length;
                 targetWaypoint = waypoints[targetWaypointIndex];
                 yield return new WaitForSeconds(waitTime);

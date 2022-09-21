@@ -573,6 +573,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   alertedTimer: 10
+  startAlertedTimer: 0
+  playerLastSeenPosition: {x: 0, y: 0, z: 0}
   patrolSpeed: 4
   waitTime: 0.3
   turnSpeed: 90
@@ -987,6 +989,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   alertedTimer: 10
+  startAlertedTimer: 0
+  playerLastSeenPosition: {x: 0, y: 0, z: 0}
   patrolSpeed: 4
   waitTime: 0.3
   turnSpeed: 90
@@ -2673,6 +2677,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   alertedTimer: 10
+  startAlertedTimer: 0
+  playerLastSeenPosition: {x: 0, y: 0, z: 0}
   patrolSpeed: 4
   waitTime: 0.3
   turnSpeed: 90
