@@ -981,8 +981,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkPoint: {x: 0, y: 0, z: 0}
-  walkPointRange: 2
-  walkDistance: 2
+  walkPointRange: 0.5
+  walkDistance: 0.5
   whatIsGround:
     serializedVersion: 2
     m_Bits: 8
