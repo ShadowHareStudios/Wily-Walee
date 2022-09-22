@@ -13,7 +13,7 @@ public class GameUI : MonoBehaviour
     void Start()
     {
         Guard.OnGuardHasCaughtPlayer += ShowGameLoseUI;
-        Lootables.PlayerHasStolen += ShowGameWinUI;
+        /*Lootables.PlayerHasStolen += ShowGameWinUI;*/
 
     }
 

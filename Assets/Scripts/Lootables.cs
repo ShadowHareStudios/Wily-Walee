@@ -64,7 +64,7 @@ public class Lootables : MonoBehaviour
             GameObject.Destroy(gameObject);
             stolen = true;
             //add to player heist value total or howver else we are tracking player score
-            PlayerHasStolen();
+            /*PlayerHasStolen();*/
         }
     }
 
