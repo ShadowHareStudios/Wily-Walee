@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -41,6 +42,7 @@ public class Player : MonoBehaviour
         transform.Translate (transform.forward * moveSpeed * Time.deltaTime * smoothInputMagnitude, Space.World);*/
 
         velocity = transform.forward * moveSpeed * smoothInputMagnitude;
+        
     }
 
   public void Hide(bool hidden)
@@ -71,6 +73,9 @@ public class Player : MonoBehaviour
     {
         rigidbody.MoveRotation(Quaternion.Euler(Vector3.up * angle));
         rigidbody.MovePosition(rigidbody.position + velocity * Time.deltaTime * smoothInputMagnitude);
+
+        
+        
     }
 
     private void OnDestroy()

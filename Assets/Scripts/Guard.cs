@@ -75,7 +75,7 @@ public class Guard : MonoBehaviour
         {
             case GuardStates.patrol:
 
-                
+                guardNavAgent.speed = 4;
 
                 if (CanSeePlayer())
                 {
@@ -103,6 +103,8 @@ public class Guard : MonoBehaviour
                 break;
 
             case GuardStates.chase:
+
+                guardNavAgent.speed = 6;
                 if (CanSeePlayer())
                 {
                     ChasePlayer();
@@ -149,7 +151,7 @@ public class Guard : MonoBehaviour
 
             case GuardStates.search:
 
-                
+                guardNavAgent.speed = 3;
 
                 if (guardNavAgent.destination != playerLastSeenPosition)
                 {
