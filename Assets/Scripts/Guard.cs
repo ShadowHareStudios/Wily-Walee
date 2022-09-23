@@ -7,7 +7,7 @@ public class Guard : MonoBehaviour
 {
     private NavMeshAgent guardNavAgent;
     public static event System.Action OnGuardHasCaughtPlayer;
-    
+    public LevelManager levelManager;
     public enum GuardStates
     {
         none,patrol,chase,search
@@ -118,6 +118,7 @@ public class Guard : MonoBehaviour
                         {
                             OnGuardHasCaughtPlayer();
                             currentState = GuardStates.none;
+                            levelManager.LevelHasBeenLost();
                         }
                     }
                 }

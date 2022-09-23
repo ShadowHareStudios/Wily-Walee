@@ -12,8 +12,8 @@ public class GameUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Guard.OnGuardHasCaughtPlayer += ShowGameLoseUI;
-        /*Lootables.PlayerHasStolen += ShowGameWinUI;*/
+        
+        
 
     }
 
@@ -28,19 +28,19 @@ public class GameUI : MonoBehaviour
             }
         }
     }
-    void ShowGameWinUI()
+    public void ShowGameWinUI()
     {
         OnGameOver(gameWinUI);
     }
-    void ShowGameLoseUI()
+    public void ShowGameLoseUI()
     {
         OnGameOver(gameLoseUI);
     }
 
-    void OnGameOver(GameObject gameOverUI)
+   public void OnGameOver(GameObject gameOverUI)
     {
         gameOverUI.SetActive(true);
         gameIsOver = true;
-        Guard.OnGuardHasCaughtPlayer -= ShowGameLoseUI;
+        
     }
 }
