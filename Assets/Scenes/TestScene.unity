@@ -312,6 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c5ef052e7e3ff48b079a4ca0c6b19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 1623537759}
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 5
   walkDistance: 5
@@ -897,6 +898,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c5ef052e7e3ff48b079a4ca0c6b19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 1623537759}
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 5
   walkDistance: 5
@@ -1632,6 +1634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c5ef052e7e3ff48b079a4ca0c6b19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 1623537759}
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 0.5
   walkDistance: 0.5
@@ -1945,11 +1948,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c33e96cda495d44c9aebd93a54fa614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 0}
+  gameManager: {fileID: 0}
   spotlight: {fileID: 482744146}
   viewDistance: 1.5
   viewMask:
     serializedVersion: 2
     m_Bits: 128
+  stolen: 0
 --- !u!65 &576963164
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2029,6 +2035,37 @@ Transform:
   m_Father: {fileID: 785574881}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+--- !u!1 &613962362
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 613962363}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &613962363
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613962362}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 42.54, y: 0, z: -30.81}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &655473660
 GameObject:
   m_ObjectHideFlags: 0
@@ -3605,6 +3642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c5ef052e7e3ff48b079a4ca0c6b19b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 1623537759}
   walkPoint: {x: 0, y: 0, z: 0}
   walkPointRange: 5
   walkDistance: 5
@@ -4870,6 +4908,76 @@ Transform:
   m_Father: {fileID: 1895454006}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1623537758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1623537761}
+  - component: {fileID: 1623537760}
+  - component: {fileID: 1623537759}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1623537759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623537758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd0f809a6c7cc604ebbf27a442852fa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingLives: 1
+  spawnPoint: {fileID: 0}
+  levelObjectives:
+  - {fileID: 1999919916}
+  - {fileID: 576963163}
+  gameUI: {fileID: 240523683}
+  guardsOnDuty: {fileID: 419126206}
+  levelMusic: {fileID: 0}
+--- !u!114 &1623537760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623537758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98e48c435fe399d42896b138c28dbe28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentCanvas: {fileID: 240523683}
+  maxLives: 3
+  playerPrefab: {fileID: 911353277}
+  playerInstance: {fileID: 0}
+  currentLevel: {fileID: 0}
+--- !u!4 &1623537761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623537758}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.9075744, y: 11.756459, z: -14.338136}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1665704190
 GameObject:
   m_ObjectHideFlags: 0
@@ -5982,11 +6090,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c33e96cda495d44c9aebd93a54fa614, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelManager: {fileID: 0}
+  gameManager: {fileID: 0}
   spotlight: {fileID: 813739752}
   viewDistance: 1.5
   viewMask:
     serializedVersion: 2
     m_Bits: 128
+  stolen: 0
 --- !u!1 &2003582344
 GameObject:
   m_ObjectHideFlags: 0
