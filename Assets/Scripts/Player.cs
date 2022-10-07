@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     public float turnSpeed = 8;
 
     public bool isHiding = false;
+    Vector3 exitDir;
+    public bool exitHiding = false;
 
     float angle;
     float smoothInputMagnitude;
@@ -61,6 +63,21 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void LeaveHidingSpot(Vector3 exitDir)
+    {
+        Debug.Log("exit to" + exitDir);
+        exitHiding = true;
+        transform.Translate(exitDir, Space.World);
+        Debug.Log("exit to" + exitDir);
+        if (exitHiding == true)
+        {
+
+            exitHiding = false;
+            
+        }
+    }
+
+
     private void Disable()
     {
         disabled = true;
@@ -74,7 +91,6 @@ public class Player : MonoBehaviour
         rigidbody.MoveRotation(Quaternion.Euler(Vector3.up * angle));
         rigidbody.MovePosition(rigidbody.position + velocity * Time.deltaTime * smoothInputMagnitude);
 
-        
         
     }
 

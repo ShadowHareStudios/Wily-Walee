@@ -127,7 +127,7 @@ public class Guard : MonoBehaviour
                 {
 
 
-                    
+                   
                     StopAllCoroutines();
 
 
@@ -152,6 +152,7 @@ public class Guard : MonoBehaviour
 
             case GuardStates.search:
 
+                spotlight.color = Color.Lerp(spotlight.color, Color.yellow, 3f);
                 guardNavAgent.speed = 3;
 
                 if (guardNavAgent.destination != playerLastSeenPosition)

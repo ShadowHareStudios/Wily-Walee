@@ -8,13 +8,14 @@ public class HidingSpots : MonoBehaviour
     bool playerIsColliding;
 
     Player player;
+    Vector3 exitDirection;
 
     private void Update()
     {
         if (playerIsColliding)
         {
-
-           /* Debug.Log("Player is Colliding");*/
+            exitDirection = this.transform.forward.normalized;
+            /* Debug.Log("Player is Colliding");*/
             if (player.GetComponent<Player>().isHiding)
             {
                 hideTime += Time.deltaTime;
@@ -36,8 +37,11 @@ public class HidingSpots : MonoBehaviour
             }
             if (Input.GetKeyUp(KeyCode.Space))
             {
+               /* Debug.Log("exit to" + exitDirection);*/
+
                 /*Debug.Log("Space is Up Stay");*/
                 player.GetComponent<Player>().Hide(false);
+                player.GetComponent<Player>().LeaveHidingSpot(exitDirection);
             }
         }
     }
@@ -57,6 +61,13 @@ public class HidingSpots : MonoBehaviour
         {
             playerIsColliding = false;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        exitDirection = this.transform.forward.normalized;
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, exitDirection * 2);
     }
 
     // function for when player is close enough to hide, highlight the hiding spot, call in Update when player is colliding

@@ -66,7 +66,7 @@ public class Lootables : MonoBehaviour
         {
             GameObject.Destroy(gameObject);
             stolen = true;
-            
+            GameManager.instance.currentLevel.ItemCollected();
             //add to player heist value total or howver else we are tracking player score
             /*PlayerHasStolen();*/
         }
