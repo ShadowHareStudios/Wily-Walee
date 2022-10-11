@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public bool exitHiding = false;
 
     float angle;
-    float smoothInputMagnitude;
+    public float smoothInputMagnitude;
     float smoothMoveVelocity;
     Vector3 velocity;
 
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     {
         if (hidden)
         {
-            gameObject.layer = LayerMask.NameToLayer("Obstacle");
+            gameObject.layer = LayerMask.NameToLayer("HiddenPlayer");
             isHiding = true;
             Disable(true);
         }
@@ -67,7 +67,7 @@ public class Player : MonoBehaviour
     {
         Debug.Log("exit to" + exitDir);
         exitHiding = true;
-        transform.Translate(exitDir, Space.World);
+        transform.Translate(exitDir * moveSpeed * Time.deltaTime * 10, Space.World);
         Debug.Log("exit to" + exitDir);
         if (exitHiding == true)
         {
