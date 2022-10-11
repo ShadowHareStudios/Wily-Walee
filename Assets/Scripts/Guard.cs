@@ -104,6 +104,7 @@ public class Guard : MonoBehaviour
 
             case GuardStates.chase:
 
+                spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
                 guardNavAgent.speed = 6;
                 if (CanSeePlayer())
                 {
@@ -203,6 +204,13 @@ public class Guard : MonoBehaviour
                     {
                         walkPointSet = false;
                     }
+                }
+                if (CanSeePlayer())
+                {
+                    guardNavAgent.ResetPath();
+                    guardNavAgent.speed = 6f;
+                    currentState = GuardStates.chase;
+                    StopAllCoroutines();
                 }
                 alertedTimer = Mathf.Clamp(alertedTimer, 0, 10);
                 break;
