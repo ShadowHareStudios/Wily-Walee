@@ -16,10 +16,10 @@ TagManager:
   - Obstacle
   - Player
   - Door
-  - 
-  - 
-  - 
-  - 
+  - Guard
+  - Lootables
+  - HidingSpot
+  - Unselectable
   - 
   - 
   - 
