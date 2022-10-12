@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameUI : MonoBehaviour
 {
+    public GameObject tutorialMessageUI;
     public GameObject gameLoseUI;
     public GameObject gameWinUI;
     bool gameIsOver;
@@ -37,7 +38,22 @@ public class GameUI : MonoBehaviour
         OnGameOver(gameLoseUI);
     }
 
-   public void OnGameOver(GameObject gameOverUI)
+    public void ShowTutorialMessageUI(GameObject tutorialMessageUI, GameObject tutorialLocation)
+    {
+        OnTipRequest(tutorialMessageUI);
+    }
+    public void OnTipRequest(GameObject tutorialMessageUI)
+    {
+        tutorialMessageUI.SetActive(true);
+        
+
+    }
+    public void HideTutorialMessageUI()
+    {
+        tutorialMessageUI.SetActive(false);
+    }
+
+    public void OnGameOver(GameObject gameOverUI)
     {
         gameOverUI.SetActive(true);
         gameIsOver = true;
