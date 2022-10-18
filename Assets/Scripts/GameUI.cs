@@ -48,7 +48,7 @@ public class GameUI : MonoBehaviour
         
 
     }
-    public void HideTutorialMessageUI()
+    public void HideTutorialMessageUI(GameObject tutorialMessageUI, GameObject tutorialLocation)
     {
         tutorialMessageUI.SetActive(false);
     }
@@ -57,6 +57,7 @@ public class GameUI : MonoBehaviour
     {
         gameOverUI.SetActive(true);
         gameIsOver = true;
+
         
     }
 }

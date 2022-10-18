@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class LevelManager : MonoBehaviour
     public Lootables[] levelObjectives;
     int itemsCollected = 0;
     public GameUI gameUI;
-
+    public bool hasObjectives;
     public Guard guardsOnDuty;
 
     public AudioSource levelMusic;
@@ -30,8 +31,8 @@ public class LevelManager : MonoBehaviour
         GameManager.instance.lives = startingLives;
         GameManager.instance.SpawnPlayer(spawnPoint);
         GameManager.instance.currentLevel = this;
+        SceneManager.sceneLoaded += OnReload;
 
-        
         //if (nextScene) GameManager.instance.nextScene = nextScene;
 
     }
@@ -50,8 +51,29 @@ public class LevelManager : MonoBehaviour
                 }
             }
         }
+        if (levelObjectives.Length > 0) { hasObjectives = true; } else { hasObjectives = false; }
         GameManager.instance.IsWinConditionMet = allObjectivesComplete;
        // Debug.Log("has Won = " + GameManager.instance.IsWinConditionMet);
+    }
+    public void OnReload(Scene scene, LoadSceneMode sceneMode)
+    {
+        /*Debug.Log(levelObjectives.Length);*/
+        if (levelObjectives.Length >= 1) { hasObjectives = true; } else { hasObjectives = false; }
+
+        if (!hasObjectives)
+        {
+            levelObjectives.Equals (FindObjectOfType<Lootables>().gameObject);
+        }
+        
+        if (!guardsOnDuty)
+        {
+            guardsOnDuty = FindObjectOfType<Guard>();
+        }
+        if (!gameUI)
+        {
+            gameUI = FindObjectOfType<GameUI>();
+        }
+
     }
 
     public void PauseLevelMusic()
@@ -69,7 +91,8 @@ public class LevelManager : MonoBehaviour
         canvas.ShowGameWinUI();
         /*canvas.startButton.onClick.AddListener(() => GameManager.instance.ReloadScene());*/
         canvas.gameObject.SetActive(true);
-        /*tm.StopTime();*/
+        
+        GameManager.instance.PauseGame();
        
     }
 
@@ -79,8 +102,9 @@ public class LevelManager : MonoBehaviour
         canvas.ShowGameLoseUI();
         
         canvas.gameObject.SetActive(true);
-/*        tm.StopTime();*/
-        
+        GameManager.instance.PauseGame();
+        /*        tm.StopTime();*/
+
     }
 
     public void ItemCollected()

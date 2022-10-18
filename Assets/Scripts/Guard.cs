@@ -29,6 +29,8 @@ public class Guard : MonoBehaviour
     public float patrolSpeed = 4;
     public float waitTime = 0.3f;
     public float turnSpeed = 90;
+    public bool hasPath;
+    public bool onPatrol;
 
     //Chase Variables
     public float timeToSpotPlayer = 0.5f;
@@ -45,6 +47,7 @@ public class Guard : MonoBehaviour
     public Transform pathHolder;
     Transform player;
     Color originalSpotlightColour;
+    
 
     private NavMeshPath path;
 
@@ -65,17 +68,23 @@ public class Guard : MonoBehaviour
             currentState = GuardStates.patrol;
         }
 
-        StartCoroutine(FollowPath(CreatePath()));
+        
     }
 
     private void Update()
     {
-        Debug.Log(currentState);
+        /*Debug.Log(currentState);*/
         switch (currentState)
         {
             case GuardStates.patrol:
 
                 guardNavAgent.speed = patrolSpeed;
+
+                if (!onPatrol)
+                {
+                    StartCoroutine(FollowPath(CreatePath()));
+                    onPatrol = true;
+                }
 
                 if (CanSeePlayer())
                 {
@@ -91,9 +100,9 @@ public class Guard : MonoBehaviour
 
                 if (playerVisibleTimer >= timeToSpotPlayer)
                 {
-                    guardNavAgent.speed = 6f;
+                    guardNavAgent.speed = chaseSpeed;
                     currentState = GuardStates.chase;
-
+                    onPatrol = false;
                    StopAllCoroutines();
                     //swap to Nav Mesh
 
@@ -104,8 +113,8 @@ public class Guard : MonoBehaviour
 
             case GuardStates.chase:
 
-                spotlight.color = Color.Lerp(originalSpotlightColour, Color.red, playerVisibleTimer / timeToSpotPlayer);
-                guardNavAgent.speed = chaseSpeed;
+               
+                
                 if (CanSeePlayer())
                 {
                     ChasePlayer();
@@ -117,6 +126,7 @@ public class Guard : MonoBehaviour
                     {
                         if (OnGuardHasCaughtPlayer != null)
                         {
+
                             OnGuardHasCaughtPlayer();
                             currentState = GuardStates.none;
                             levelManager.LevelHasBeenLost();
@@ -136,11 +146,12 @@ public class Guard : MonoBehaviour
                     
                     if (!guardNavAgent.hasPath)
                     {
-
+                        
                         currentState = GuardStates.search;
+                        guardNavAgent.speed = patrolSpeed;
                         guardNavAgent.ResetPath();
 
-                        Debug.Log("time to search");
+                        
                     }
                     else
                     {
@@ -153,8 +164,8 @@ public class Guard : MonoBehaviour
 
             case GuardStates.search:
 
-                spotlight.color = Color.Lerp(spotlight.color, Color.yellow, 3f);
-                guardNavAgent.speed = patrolSpeed;
+                spotlight.color = Color.Lerp(spotlight.color, Color.yellow, 1f);
+                
 
                 if (guardNavAgent.destination != playerLastSeenPosition)
                 {
@@ -179,19 +190,22 @@ public class Guard : MonoBehaviour
                 {
                     if (startAlertedTimer < alertedTimer)
                     {
-                        Debug.Log("still searching");
+                       /* Debug.Log("still searching");*/
+                       //Play searching anims
 
                     }
 
                     else
                     {
+                       spotlight.color = originalSpotlightColour;
                         guardNavAgent.ResetPath();
                         /*alertedTimer = 10f;*/
-                        guardNavAgent.speed = patrolSpeed;
+                        playerVisibleTimer = 0;
+                        
                         currentState = GuardStates.patrol;
                         walkPointSet = false;
                         StopAllCoroutines();
-                        StartCoroutine(FollowPath(CreatePath()));
+                        /*StartCoroutine(FollowPath(CreatePath()));*/
 
                     }
 
@@ -207,6 +221,7 @@ public class Guard : MonoBehaviour
                 }
                 if (CanSeePlayer())
                 {
+                    spotlight.color = Color.Lerp(spotlight.color, Color.red, playerVisibleTimer / timeToSpotPlayer);
                     guardNavAgent.ResetPath();
                     guardNavAgent.speed = chaseSpeed;
                     currentState = GuardStates.chase;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 
@@ -26,6 +27,18 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public GameObject playerInstance;
     [HideInInspector] public LevelManager currentLevel;
+
+
+    // example of delegate "Number Printer"
+    delegate void PrintNumber(int num);
+    PrintNumber printNumber;
+
+    void NumberPrinter(int numToPrint) 
+    {
+       /*use to print attempt count?
+       * Debug.Log("My Favourite Number is" + numToPrint);*/
+        
+    }
 
     public int score
     {
@@ -65,9 +78,12 @@ public class GameManager : MonoBehaviour
             }
 
             if (currentCanvas)
+            {
                 //currentCanvas.SetLivesText(_lives.ToString("00"));
+            }
+            
 
-            Debug.Log("Lives changed to " + _lives);
+
 
         }
     }
@@ -90,20 +106,45 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
+
+
         if (!currentCanvas)
+        {
             currentCanvas = FindObjectOfType<GameUI>();
+        }
+        SceneManager.sceneLoaded += OnReload;
+
+        printNumber += NumberPrinter;
+        printNumber(6);
+
     }
 
     // Update is called once per frame
     void Update()
     {
+       
+        /*// Pause
         if (Input.GetKeyDown(KeyCode.Escape))
         {
            // if (SceneManager.GetActiveScene().name == titleScene.name)
            //{
               //  QuitGame();
             //}
+        }*/
+    }
+
+    public void OnReload(Scene scene,LoadSceneMode sceneMode)
+    {
+        if (!currentCanvas)
+        {
+            currentCanvas = FindObjectOfType<GameUI>();
         }
+        if (!playerInstance)
+        {
+            playerInstance = FindObjectOfType<Player>().gameObject;
+        }
+        ResumeGame();
+
     }
 
     public void QuitGame()
@@ -120,6 +161,7 @@ public class GameManager : MonoBehaviour
     {
         Scene scene = SceneManager.GetActiveScene(); 
         SceneManager.LoadScene(scene.name);
+        
     }
 
     public void ReturnToTitle()
@@ -143,7 +185,7 @@ public class GameManager : MonoBehaviour
 
     public void ResumeGame()
     {
-        Time.timeScale = 0f;
+        Time.timeScale = 1f;
     }
 
     public void MoveToNextScene()
