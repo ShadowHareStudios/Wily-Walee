@@ -12,7 +12,16 @@ public class Lootables : MonoBehaviour
     public float viewDistance;
     public LayerMask viewMask;
 
-    float viewAngle;
+    public float viewRadius;
+    [Range(0, 360)]
+    public float viewAngle;
+
+    public LayerMask targetMask;
+    public LayerMask obstacleMask;
+
+    public List<Transform> visibleTargets = new List<Transform>();
+
+    
     float playerVisibleTimer;
     float timeToSteal = 4f;
     float isStealing;
@@ -33,7 +42,7 @@ public class Lootables : MonoBehaviour
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        viewAngle = spotlight.spotAngle;
+        
         originalItemLocation = transform.position;
         originalSpotlightColour = spotlight.color;
         stolen = false;
@@ -88,7 +97,9 @@ public class Lootables : MonoBehaviour
             }
         }
         return false;
-    }
+        }
+        
+    
     private void OnDrawGizmos()
     {
         
