@@ -20,7 +20,7 @@ public class TutorialTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
             {
-            gameUI.HideTutorialMessageUI();
+            gameUI.HideTutorialMessageUI(tutorialMessage, tutorialLocation);
         }
     }
 }

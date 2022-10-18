@@ -29,7 +29,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9114248535357841270}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.1, y: 1.11, z: -7.82}
   m_LocalScale: {x: 1, y: 1.6402762, z: 1}
   m_ConstrainProportionsScale: 0
@@ -126,6 +126,8 @@ MonoBehaviour:
   patrolSpeed: 4
   waitTime: 0.3
   turnSpeed: 90
+  hasPath: 0
+  onPatrol: 0
   timeToSpotPlayer: 1.5
   grabDistance: 0.5
   chaseSpeed: 6
@@ -149,7 +151,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 1
-  m_Constraints: 112
+  m_Constraints: 80
   m_CollisionDetection: 1
 --- !u!195 &9114248535357841167
 NavMeshAgent:
@@ -218,7 +220,7 @@ Light:
   m_Shape: 0
   m_Color: {r: 0.9811321, g: 0.9599125, b: 0.5322179, a: 1}
   m_Intensity: 6
-  m_Range: 15
+  m_Range: 22
   m_SpotAngle: 150
   m_InnerSpotAngle: 1
   m_CookieSize: 10

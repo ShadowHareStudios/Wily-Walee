@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -21,15 +22,18 @@ public class Player : MonoBehaviour
     new Rigidbody rigidbody;
     bool disabled;
 
+    PlayerController playerC;
+
     private void Start()
     {
+        playerC = GetComponent<PlayerController>();
         rigidbody = GetComponent<Rigidbody>();
         Guard.OnGuardHasCaughtPlayer += Disable;
     }
     void Update()
     {
         Vector3 inputDirection = Vector3.zero;
-        if (!disabled)
+        if (!disabled && playerC.requestMove)
         {
             inputDirection = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
         }
@@ -44,13 +48,17 @@ public class Player : MonoBehaviour
         transform.Translate (transform.forward * moveSpeed * Time.deltaTime * smoothInputMagnitude, Space.World);*/
 
         velocity = transform.forward * moveSpeed * smoothInputMagnitude;
-        
+        if(inputMagnitude == 0)
+        {
+            playerC.requestMove = false;
+        }
     }
 
   public void Hide(bool hidden)
     {
         if (hidden)
         {
+            
             gameObject.layer = LayerMask.NameToLayer("HiddenPlayer");
             isHiding = true;
             Disable(true);
@@ -65,10 +73,10 @@ public class Player : MonoBehaviour
 
     public void LeaveHidingSpot(Vector3 exitDir)
     {
-        Debug.Log("exit to" + exitDir);
+        
         exitHiding = true;
-        transform.Translate(exitDir * moveSpeed * Time.deltaTime * 10, Space.World);
-        Debug.Log("exit to" + exitDir);
+        transform.Translate(exitDir * moveSpeed * Time.deltaTime, Space.World);
+        
         if (exitHiding == true)
         {
 
@@ -81,6 +89,7 @@ public class Player : MonoBehaviour
     private void Disable()
     {
         disabled = true;
+        
     }
     private void Disable(bool disabled)
     {

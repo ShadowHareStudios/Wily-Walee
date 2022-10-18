@@ -8,6 +8,7 @@ public class Lootables : MonoBehaviour
     public LevelManager levelManager;
     public GameManager gameManager;
 
+    
     public Light spotlight;
     public float viewDistance;
     public LayerMask viewMask;
@@ -46,7 +47,7 @@ public class Lootables : MonoBehaviour
         originalItemLocation = transform.position;
         originalSpotlightColour = spotlight.color;
         stolen = false;
-
+        
        
     }
 
