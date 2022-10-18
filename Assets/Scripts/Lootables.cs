@@ -36,7 +36,7 @@ public class Lootables : MonoBehaviour
 
     Transform player;
 
-    public static event System.Action PlayerHasStolen;
+    /*public static event System.Action PlayerHasStolen;*/
 
 
 
