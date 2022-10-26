@@ -23,7 +23,7 @@ public class Guard : MonoBehaviour
     public LayerMask whatIsGround;
     public float alertedTimer = 10f;
     public float startAlertedTimer;
-   public Vector3 playerLastSeenPosition;
+    public Vector3 playerLastSeenPosition;
 
     //Patrol Variables
     public float patrolSpeed = 4;
