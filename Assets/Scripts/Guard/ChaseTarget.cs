@@ -15,31 +15,33 @@ public class ChaseTarget : IState
         _guard = guard;
         _navMeshAgent = navMeshAgent;
         _animator = animator;
-         _enemyDetector  = _guard.gameObject.GetComponent<EnemyDetector>();
+        _enemyDetector  = _guard.gameObject.GetComponent<EnemyDetector>();
 
     }
 
     public void Tick()
     {
-        
-        
-        
+        if (_guard.Target != null)
+        {
+            _navMeshAgent.SetDestination(_guard.Target.transform.position);
+        }
+        else { _navMeshAgent.SetDestination(_enemyDetector.playerLastSeenPosition); }
     }
     public void OnEnter()
     {
-        
+        _guard.StopAllCoroutines();
+        _guard.StartCoroutine(_guard.TurnToFace(_guard.Target.transform.position));
         Debug.Log("ChaseState");
         _navMeshAgent.enabled = true;
-        _navMeshAgent.SetDestination(_guard.Target.transform.position);
+        
     }
 
     public void OnExit()
     {
         Debug.Log("FinishChaseState");
-        if (_guard.Target = null)
-        {
-            _navMeshAgent.SetDestination(_enemyDetector.playerLastSeenPosition);
-        }
-        _navMeshAgent.enabled = false;
+        _guard.StopAllCoroutines();
+
+        _navMeshAgent.SetDestination(_enemyDetector.playerLastSeenPosition);
+        
     }
 }

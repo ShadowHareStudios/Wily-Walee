@@ -32,14 +32,17 @@ internal class MoveToTargetLocation : IState
 
     public void OnEnter()
     {
+        _guard.StopAllCoroutines();
+        _guard.StartCoroutine(_guard.TurnToFace(_guard.walkPoint));
         Debug.Log("MoveToPointState");
         TimeStuck = 0f;
         _navMeshAgent.enabled = true;
-        _navMeshAgent.SetDestination(_guard.searchPoint);
+        _navMeshAgent.SetDestination(_guard.walkPoint);
     }
 
     public void OnExit()
     {
+        _guard.StopAllCoroutines();
         Debug.Log("Create new Search Point");
         _navMeshAgent.enabled = false;
     }

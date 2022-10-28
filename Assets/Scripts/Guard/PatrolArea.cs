@@ -31,7 +31,7 @@ public class PatrolArea : IState
         Debug.Log("PatrolState");
         _navMeshAgent.enabled = true;
         _navMeshAgent.speed = patrolSpeed;
-        _guard.FollowPath(_myPath);
+        _guard.StartCoroutine(_guard.FollowPath(_myPath));
         
     }
         

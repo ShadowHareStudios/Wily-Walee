@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Random = UnityEngine.Random;
 using UnityEngine.AI;
 
 public class StateGuard : MonoBehaviour
@@ -30,9 +31,13 @@ public class StateGuard : MonoBehaviour
     public bool onPatrol;
 
     //Search Variables
-    public Vector3 searchPoint;
+    public Vector3 walkPoint;
+    bool walkPointSet;
+    public float walkPointRange = 3f;
+    public float walkDistance = 3f;
+    public LayerMask whatIsGround;
     //Chase Variables
-    
+
 
 
     private void Awake()
@@ -53,26 +58,31 @@ public class StateGuard : MonoBehaviour
         
 
         
-        /*At(moveToLocation, from: search, condition:  );*/
-        /*At(patrol, from: chase, condition: HasNoTarget());*/
-        
+        At(moveToLocation, from: search, condition: HasNoTarget() );
+        At(patrol, from: search, condition:() => enemyDetector.goPatrol);
+        At(search, from: chase, condition: HasNoTarget() );
+        At(search, from:moveToLocation, condition:  ReachedSearchPoint() );
+
+
         _stateMachine.AddAnyTransition(chase, predicate: () => enemyDetector.goChase);
         _stateMachine.AddAnyTransition(search, predicate: () => enemyDetector.goSearch);
-        _stateMachine.AddAnyTransition(patrol, predicate: () => enemyDetector.goPatrol);
+        
 
 
 
         /*At(from: chase, to: search, condition: () => enemyDetector.canSeePlayer = false);*/
 
         _stateMachine.SetState(patrol);
-        StartCoroutine(FollowPath(CreatePath()));
+        /*StartCoroutine(FollowPath(CreatePath()));*/
 
         void At(IState to, IState from, Func<bool> condition) => _stateMachine.AddTransition(from: from, to: to, condition);
 
 
-        /*Func<bool>HasNoTarget() => () => Target == null;
-        Func<bool>ReachedTarget() => () => Target != null && Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(transform.position), Target.transform.position) < grabDistance;
-        Func<bool>StuckForOverASecond() => () => moveToLocation.TimeStuck > 1f;*/
+        Func<bool>HasNoTarget() => () => Target == null;
+        Func<bool> ReachedSearchPoint() => () => Target == null && Vector3.Distance(transform.position, walkPoint) < 1f;
+        /*Func<bool>ReachedTarget() => () => Target != null && Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(transform.position), Target.transform.position) < grabDistance;*/
+        /*Func<bool>StuckForOverASecond() => () => moveToLocation.TimeStuck > 1f;*/
+        
 
         
         
@@ -126,7 +136,35 @@ public class StateGuard : MonoBehaviour
             yield return null;
         }
     }
-    IEnumerator TurnToFace(Vector3 lookTarget)
+    public void SearchWalkPoint()
+    {
+        float randomZ = Random.Range(-walkPointRange, walkPointRange);
+        float randomX = Random.Range(-walkPointRange, walkPointRange);
+
+        /* Debug.Log("This is randomZ: " + randomZ + " This is randomX: " + randomX);*/
+
+        walkPoint = new Vector3(this.transform.position.x + randomX, this.transform.position.y, this.transform.position.z + randomZ);
+        
+
+        if (Physics.Raycast(walkPoint, -this.transform.up, 2f, whatIsGround))
+        {
+            walkPointSet = true;
+        }
+
+        Vector3 dirToWalkPoint = ((this.transform.position + Vector3.down * 0.5f) - walkPoint).normalized;
+
+        RaycastHit hit;
+        if (Physics.Raycast((this.transform.position + Vector3.down * 0.5f), dirToWalkPoint, out hit))
+        {
+            walkPoint = hit.point;
+            
+        }
+        
+        Debug.DrawLine((this.transform.position + Vector3.down * 0.5f), walkPoint, Color.red, 5f);
+
+        
+    }
+    public IEnumerator TurnToFace(Vector3 lookTarget)
     {
         Vector3 dirToLookTarget = (lookTarget - transform.position).normalized;
         float targetAngle = 90 - Mathf.Atan2(dirToLookTarget.z, dirToLookTarget.x) * Mathf.Rad2Deg;
