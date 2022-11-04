@@ -42,7 +42,7 @@ internal class MoveToTargetLocation : IState
 
     public void OnExit()
     {
-        _guard.StopAllCoroutines();
+        
         Debug.Log("Create new Search Point");
         _navMeshAgent.enabled = false;
     }

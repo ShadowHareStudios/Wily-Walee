@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
     float smoothMoveVelocity;
     Vector3 velocity;
 
-    new Rigidbody rigidbody;
+    Rigidbody rigidbody;
     bool disabled;
 
     PlayerController playerC;

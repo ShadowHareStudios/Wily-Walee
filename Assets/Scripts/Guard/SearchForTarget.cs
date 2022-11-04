@@ -27,7 +27,7 @@ public class SearchForTarget : IState
     public void OnEnter()
     {
         
-        _guard.StopAllCoroutines();
+       
         Debug.Log("SearchState");
         _navMeshAgent.enabled = true;
         _navMeshAgent.SetDestination(_enemyDetector.playerLastSeenPosition);

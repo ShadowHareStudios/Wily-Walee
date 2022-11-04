@@ -5,7 +5,7 @@ using UnityEditor;
 using Unity.VisualScripting;
 
 [CustomEditor(typeof(FieldOfView))]
-public class FieldOfViewEditor : Editor
+public class FieldOfViewEditor : Editor 
 {
     private void OnSceneGUI()
     {

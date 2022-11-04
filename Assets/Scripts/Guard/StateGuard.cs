@@ -16,7 +16,7 @@ public class StateGuard : MonoBehaviour
 
     private StateMachine _stateMachine;
     
-    public Player Target { get;set; }
+    public Transform Target { get;set; }
 
     public Lootables Lootables { get; set; }
 
@@ -79,7 +79,7 @@ public class StateGuard : MonoBehaviour
 
 
         Func<bool>HasNoTarget() => () => Target == null;
-        Func<bool> ReachedSearchPoint() => () => Target == null && Vector3.Distance(transform.position, walkPoint) < 1f;
+        Func<bool> ReachedSearchPoint() => () =>  Vector3.Distance(transform.position, walkPoint) < 1f;
         /*Func<bool>ReachedTarget() => () => Target != null && Vector3.Distance(GetComponent<Collider>().ClosestPointOnBounds(transform.position), Target.transform.position) < grabDistance;*/
         /*Func<bool>StuckForOverASecond() => () => moveToLocation.TimeStuck > 1f;*/
         

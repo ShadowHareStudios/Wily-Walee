@@ -92,7 +92,7 @@ public class EnemyDetector : MonoBehaviour
                 CanSeePlayer();
                 
             }
-            else { inLoS = false; _guard.Target = null;  }
+            else { inLoS = false; }
             
         }
     }
@@ -235,38 +235,10 @@ public class EnemyDetector : MonoBehaviour
 
     public void CanSeePlayer()
     {
-        
+        playerLastSeenPosition = player.transform.position;
         goPatrol = false;
-        _guard.Target = player;
-        
+        _guard.Target = player.transform;
 
-        
-
-        if (inLoS)
-        {
-            goSearch = true;   
-            playerVisibleTimer += Time.deltaTime;
-            spotlight.color = Color.Lerp(originalSpotlightColour, Color.yellow, playerVisibleTimer / timeToSpotPlayer);
-        }
-        else
-        {
-
-            playerVisibleTimer -= Time.deltaTime;
-            spotlight.color = Color.Lerp(spotlight.color, originalSpotlightColour, startAlertedTimer / alertedTimer);
-
-
-
-        }
-        playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
-        spotlight.color = Color.Lerp(spotlight.color, Color.red, playerVisibleTimer / timeToSpotPlayer);
-
-        if(playerVisibleTimer >= timeToSpotPlayer)
-        {
-            spotlight.color = Color.Lerp(spotlight.color, Color.red, playerVisibleTimer / timeToSpotPlayer);
-            hasDetected = true;
-            goSearch = false;
-        }
-   
     }
     public void LostPlayer()
     {
@@ -287,7 +259,7 @@ public class EnemyDetector : MonoBehaviour
 
         if (hasDetected)
         {
-            playerLastSeenPosition = player.transform.position;
+            
             goChase = true;
             if (!inLoS)
             {
@@ -298,8 +270,31 @@ public class EnemyDetector : MonoBehaviour
            
            
         }
-        
 
+        if (inLoS && !hasDetected)
+        {
+            goSearch = true;
+            playerVisibleTimer += Time.deltaTime;
+            spotlight.color = Color.Lerp(originalSpotlightColour, Color.yellow, playerVisibleTimer / timeToSpotPlayer);
+        }
+        else
+        {
+
+            playerVisibleTimer -= Time.deltaTime;
+            spotlight.color = Color.Lerp(spotlight.color, originalSpotlightColour, startAlertedTimer / alertedTimer);
+
+
+
+        }
+        playerVisibleTimer = Mathf.Clamp(playerVisibleTimer, 0, timeToSpotPlayer);
+        spotlight.color = Color.Lerp(spotlight.color, Color.red, playerVisibleTimer / timeToSpotPlayer);
+
+        if (playerVisibleTimer >= timeToSpotPlayer)
+        {
+            spotlight.color = Color.Lerp(spotlight.color, Color.red, playerVisibleTimer / timeToSpotPlayer);
+            hasDetected = true;
+            goSearch = false;
+        }
 
 
 
